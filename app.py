@@ -3,6 +3,8 @@ import json
 import os
 import time
 import requests
+import pymsteams
+
 
 from dotenv import load_dotenv
 import boto3
@@ -66,12 +68,10 @@ def get_messages():
         time.sleep(1)
 
 def send_teams_alert(json_body):
-    headers = {'Content-Type': 'application/json'}
-    data = {
-        "text": f"{json_body.get("title")}"
-    }
-    response = requests.post(TEAMS_WEBHOOK, headers=headers, data=json.dumps(data))
-    return response.status_code
+    myTeamsMessage = pymsteams.connectorcard(TEAMS_WEBHOOK)
+    myTeamsMessage.title(f"{json_body.get("title")}")
+    myTeamsMessage.text(f"{json_body.get("desc")}")
+    myTeamsMessage.send()
 
 if __name__ == '__main__':
     # app = create_app()
