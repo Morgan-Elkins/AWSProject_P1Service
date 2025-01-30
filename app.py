@@ -1,10 +1,8 @@
-import copy
 import json
 import os
 import time
-import requests
 import pymsteams
-
+import threading
 
 from dotenv import load_dotenv
 import boto3
@@ -20,16 +18,15 @@ sqs = boto3.client('sqs', region_name=AWS_REGION)
 def create_app():
     app = Flask(__name__)
 
-    @app.route("/")
+    # http://localhost:5001/health
+    @app.route("/health", methods=["GET"])
     def home():
         print(f"{AWS_REGION} {AWS_QUEUE}")
-        return "<h1>test</h1>", 200
+        return "Healthy", 200
 
     return app
 
 def get_messages():
-    print("TEST")
-    print(f"{AWS_REGION} {AWS_QUEUE}")
     while True:
         try:
             response = sqs.receive_message(
@@ -53,13 +50,11 @@ def get_messages():
                 QueueUrl=AWS_QUEUE,
                 ReceiptHandle=receipt_handle
             )
-            print('Received and deleted message: %s' % message)
 
             body = message['Body']
             body = body.replace("\'", "\"") # WHY?????
             json_body = json.loads(body)
-            print(f"Message contents {json_body}")
-            print(f"Title: {json_body.get("title")}")
+            # print(f"Message contents {json_body}")
 
             send_teams_alert(json_body)
 
@@ -74,6 +69,6 @@ def send_teams_alert(json_body):
     myTeamsMessage.send()
 
 if __name__ == '__main__':
-    # app = create_app()
-    # app.run()
-    get_messages()
+    app = create_app()
+    threading.Thread(target=lambda: app.run( port=5001)).start()
+    threading.Thread(target=lambda: get_messages()).start()
