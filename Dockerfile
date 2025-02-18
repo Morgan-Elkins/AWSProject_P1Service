@@ -6,6 +6,8 @@ RUN pip install -r requirements.txt
 COPY . .
 CMD ["gunicorn", "--config", "gunicorn_config.py", "app:app"]
 
+ENV PYTHONUNBUFFERED=1
+
 ENV AWS_REGION=""
 ENV AWS_Q1=""
 ENV TEAMS_WEBHOOK=""

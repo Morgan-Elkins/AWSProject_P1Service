@@ -51,17 +51,12 @@ def get_messages():
             )
 
             body = message['Body']
-            body = body.replace("\'", "\"")
-            json_body = json.loads(body)
+            json_body = eval(body)
             print(f"Message contents {json_body}")
 
-            # if body.get('title') is None or body.get('desc') is None or body.get('prio') is None:
-            #     print("Error in ")
-            #     continue
-            #
-            # if body.get("title") == "" or body.get("desc") == "" or body.get("prio") == "":
-            #     print("Error in ")
-            #     continue
+            if json_body.get('title') is None or json_body.get('desc') is None or json_body.get('prio') is None:
+                continue
+
 
             print(send_teams_alert(json_body))
 
@@ -71,8 +66,8 @@ def get_messages():
 
 def send_teams_alert(json_body):
     myTeamsMessage = pymsteams.connectorcard(TEAMS_WEBHOOK)
-    myTeamsMessage.title(f"{json_body.get("title")}")
-    myTeamsMessage.text(f"{json_body.get("desc")}")
+    myTeamsMessage.title(f"{json_body.get('title')}")
+    myTeamsMessage.text(f"{json_body.get('desc')}")
     return myTeamsMessage.send()
 
 #Docker: docker run --env-file ./.env -p 8081:8081 p1service-flask-app
