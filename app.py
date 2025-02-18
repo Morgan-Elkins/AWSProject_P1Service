@@ -6,7 +6,7 @@ import threading
 
 from dotenv import load_dotenv
 import boto3
-from flask import Flask
+from flask import Flask, jsonify
 
 load_dotenv()
 
@@ -20,9 +20,8 @@ def create_app():
 
     # http://localhost:5001/health
     @app.route("/health", methods=["GET"])
-    def home():
-        print(f"{AWS_REGION} {AWS_QUEUE}")
-        return "Healthy", 200
+    def health():
+        return jsonify({"status":"Healthy"}), 200
 
     return app
 
@@ -52,14 +51,19 @@ def get_messages():
             )
 
             body = message['Body']
-            body = body.replace("\'", "\"") # WHY?????
+            body = body.replace("\'", "\"")
             json_body = json.loads(body)
-            # print(f"Message contents {json_body}")
+            print(f"Message contents {json_body}")
 
-            if body.get("title") is None or body.get("desc") is None or body.get("prio") is None:
-                continue
+            # if body.get('title') is None or body.get('desc') is None or body.get('prio') is None:
+            #     print("Error in ")
+            #     continue
+            #
+            # if body.get("title") == "" or body.get("desc") == "" or body.get("prio") == "":
+            #     print("Error in ")
+            #     continue
 
-            send_teams_alert(json_body)
+            print(send_teams_alert(json_body))
 
         except:
             pass
@@ -71,7 +75,13 @@ def send_teams_alert(json_body):
     myTeamsMessage.text(f"{json_body.get("desc")}")
     return myTeamsMessage.send()
 
+#Docker: docker run --env-file ./.env -p 8081:8081 p1service-flask-app
 if __name__ == '__main__':
+    print("Running as main")
     app = create_app()
     threading.Thread(target=lambda: app.run( port=5001)).start()
+    threading.Thread(target=lambda: get_messages()).start()
+else:
+    print("Running not main")
+    app = create_app()
     threading.Thread(target=lambda: get_messages()).start()
