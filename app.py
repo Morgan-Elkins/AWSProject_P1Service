@@ -17,14 +17,10 @@ sqs = boto3.client('sqs', region_name=AWS_REGION)
 
 app = Flask(__name__)
 
-def create_app():
-
-    # http://localhost:5001/health
-    @app.route("/health", methods=["GET"])
-    def health():
-        return jsonify({"status":"Healthy"}), 200
-
-    return app
+# http://localhost:5001/health
+@app.route("/health", methods=["GET"])
+def health():
+    return jsonify({"status":"Healthy"}), 200
 
 def get_messages():
     while True:
@@ -81,6 +77,4 @@ bg_thread = background_thread()
 
 #Docker: docker run --env-file ./.env -p 8081:8081 p1service-flask-app
 if __name__ == '__main__':
-    print("Running as main")
-    app = create_app()
     threading.Thread(target=lambda: app.run()).start()
