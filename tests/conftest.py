@@ -3,12 +3,12 @@ import os
 import pytest
 from flask import jsonify
 
-from app import create_app, send_teams_alert
-
 os.environ['AWS_REGION'] = 'eu-west-2'
 os.environ['AWS_Q1'] = 'testing'
 os.environ['AWS_ACCESS_KEY_ID'] = 'testing'
 os.environ['AWS_SECRET_ACCESS_KEY'] = 'testing'
+
+from app import create_app, send_teams_alert
 
 @pytest.fixture()
 def app():
