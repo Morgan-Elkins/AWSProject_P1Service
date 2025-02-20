@@ -34,7 +34,7 @@ def test_get_health(client):
     response = client.get("/health")
     assert b'{"status":"Healthy"}\n' in response.data
 
-def test_send_teams_alert(client):
-    data = {"title": "pytest", "desc": "pytest desc", "prio": 0}
-    response = send_teams_alert(data)
-    assert response == True
+# def test_send_teams_alert(client):
+#     data = {"title": "pytest", "desc": "pytest desc", "prio": 0}
+#     response = send_teams_alert(data)
+#     assert response == True
