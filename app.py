@@ -15,8 +15,9 @@ AWS_QUEUE = os.getenv("AWS_Q1")
 TEAMS_WEBHOOK = os.getenv("TEAMS_WEBHOOK")
 sqs = boto3.client('sqs', region_name=AWS_REGION)
 
+app = Flask(__name__)
+
 def create_app():
-    app = Flask(__name__)
 
     # http://localhost:5001/health
     @app.route("/health", methods=["GET"])
@@ -70,13 +71,16 @@ def send_teams_alert(json_body):
     myTeamsMessage.text(f"{json_body.get('desc')}")
     return myTeamsMessage.send()
 
+def background_thread():
+    thread = threading.Thread(target=get_messages, daemon=True)
+    thread.start()
+    return thread
+
+bg_thread = background_thread()
+
+
 #Docker: docker run --env-file ./.env -p 8081:8081 p1service-flask-app
 if __name__ == '__main__':
     print("Running as main")
     app = create_app()
-    threading.Thread(target=lambda: app.run( port=5001)).start()
-    threading.Thread(target=lambda: get_messages()).start()
-else:
-    print("Running not main")
-    app = create_app()
-    threading.Thread(target=lambda: get_messages()).start()
+    threading.Thread(target=lambda: app.run()).start()
