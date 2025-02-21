@@ -35,7 +35,7 @@ def get_messages():
                     'All'
                 ],
                 VisibilityTimeout=0,
-                WaitTimeSeconds=0
+                WaitTimeSeconds=2
             )
 
             message = response['Messages'][0]
@@ -49,17 +49,14 @@ def get_messages():
 
             body = message['Body']
             json_body = eval(body)
-            print(f"Message contents {json_body}")
 
             if json_body.get('title') is None or json_body.get('desc') is None or json_body.get('prio') is None:
                 continue
 
-
-            print(send_teams_alert(json_body))
+            send_teams_alert(json_body)
 
         except:
             pass
-        time.sleep(1)
 
 def send_teams_alert(json_body):
     myTeamsMessage = pymsteams.connectorcard(TEAMS_WEBHOOK)
