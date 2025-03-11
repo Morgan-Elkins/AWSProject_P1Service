@@ -50,8 +50,10 @@ def get_messages():
             body = message['Body']
             json_body = eval(body)
 
-            if json_body.get('title') is None or json_body.get('desc') is None or json_body.get('prio') is None:
-                continue
+            print(json_body.get('title'))
+
+            # if json_body.get('title') is None or json_body.get('desc') is None or json_body.get('prio') is None:
+            #     continue
 
             send_teams_alert(json_body)
 
