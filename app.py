@@ -64,7 +64,8 @@ def send_teams_alert(json_body):
     myTeamsMessage = pymsteams.connectorcard(TEAMS_WEBHOOK)
     myTeamsMessage.title(f"{json_body.get('title')}")
     myTeamsMessage.text(f"{json_body.get('desc')}")
-    return myTeamsMessage.send()
+    print(send_teams_alert(json_body))
+    return "Sent"
 
 def background_thread():
     thread = threading.Thread(target=get_messages, daemon=True)
