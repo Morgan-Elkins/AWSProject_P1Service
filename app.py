@@ -55,6 +55,8 @@ def get_messages():
             # if json_body.get('title') is None or json_body.get('desc') is None or json_body.get('prio') is None:
             #     continue
 
+            print("Sending teams alert")
+
             print(send_teams_alert(json_body))
 
         except:
@@ -64,7 +66,11 @@ def send_teams_alert(json_body):
     myTeamsMessage = pymsteams.connectorcard(TEAMS_WEBHOOK)
     myTeamsMessage.title(f"{json_body.get('title')}")
     myTeamsMessage.text(f"{json_body.get('desc')}")
-    print(send_teams_alert(json_body))
+    try:
+        send_teams_alert(json_body)
+    except Exception as e:
+        print(e)
+
     return "Sent"
 
 def background_thread():
