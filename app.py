@@ -67,7 +67,7 @@ def send_teams_alert(json_body):
     myTeamsMessage.title(f"{json_body.get('title')}")
     myTeamsMessage.text(f"{json_body.get('desc')}")
     try:
-        send_teams_alert(json_body)
+        myTeamsMessage.send()
     except Exception as e:
         print("An error occurred:", type(e).__name__)
 
