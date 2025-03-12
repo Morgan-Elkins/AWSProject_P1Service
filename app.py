@@ -55,7 +55,7 @@ def get_messages():
             # if json_body.get('title') is None or json_body.get('desc') is None or json_body.get('prio') is None:
             #     continue
 
-            print("Sending teams alert")
+            print("Sending teams alert, :", TEAMS_WEBHOOK)
 
             print(send_teams_alert(json_body))
 
