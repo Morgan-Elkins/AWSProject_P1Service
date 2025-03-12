@@ -69,9 +69,9 @@ def send_teams_alert(json_body):
     try:
         myTeamsMessage.send()
     except Exception as e:
-        print("An error occurred:", e)
+        print("An error occurred:", e, e.args)
 
-    return "Sent"
+    return "Sents"
 
 def background_thread():
     thread = threading.Thread(target=get_messages, daemon=True)
