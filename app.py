@@ -80,7 +80,7 @@ def background_thread():
 
 bg_thread = background_thread()
 
-
-#Docker: docker run --env-file ./.env -p 8081:8081 p1service-flask-app
+# Docker build p1service-flask-app
+#Docker: docker run --env-file ./.env -p 8081:8081 --rm p1service-flask-app
 if __name__ == '__main__':
     threading.Thread(target=lambda: app.run()).start()
