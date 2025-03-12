@@ -69,7 +69,7 @@ def send_teams_alert(json_body):
     try:
         myTeamsMessage.send()
     except Exception as e:
-        print("An error occurred:", type(e).__name__)
+        print("An error occurred:", e)
 
     return "Sent"
 
