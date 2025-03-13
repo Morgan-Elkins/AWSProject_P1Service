@@ -99,7 +99,7 @@ def get_messages():
             pass
 
 def send_teams_alert(json_body):
-    get_llm_message = f"   \n A suggested improvement is: {getLLMmessage(str(json_body.get('desc')))}"
+    get_llm_message = f"   \n **A suggested improvement is**: {getLLMmessage(str(json_body.get('desc')))}"
     myTeamsMessage = pymsteams.connectorcard(TEAMS_WEBHOOK)
     myTeamsMessage.title(f"{json_body.get('title')}")
     myTeamsMessage.text(f"{json_body.get('desc')}   \n {get_llm_message}")
