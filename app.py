@@ -88,8 +88,8 @@ def get_messages():
 
             print(json_body.get('title'))
 
-            # if json_body.get('title') is None or json_body.get('desc') is None or json_body.get('prio') is None:
-            #     continue
+            if json_body.get('title') is None or json_body.get('desc') is None or json_body.get('prio') is None:
+                continue
 
             print("Sending teams alert, :")
 
@@ -99,16 +99,16 @@ def get_messages():
             pass
 
 def send_teams_alert(json_body):
-    get_llm_message = f"   \n **A suggested improvement is**: {getLLMmessage(str(json_body.get('desc')))}"
+    get_llm_message = f"   \n\n\n **A suggested improvement is**: {getLLMmessage(str(json_body.get('desc')))}"
     myTeamsMessage = pymsteams.connectorcard(TEAMS_WEBHOOK)
     myTeamsMessage.title(f"{json_body.get('title')}")
-    myTeamsMessage.text(f"{json_body.get('desc')}   \n {get_llm_message}")
+    myTeamsMessage.text(f"{json_body.get('desc')}   \n\n {get_llm_message}")
     try:
         myTeamsMessage.send()
     except Exception as e:
         print("An error occurred:", e, e.args)
 
-    return "Sents"
+    return "Sent"
 
 def background_thread():
     thread = threading.Thread(target=get_messages, daemon=True)
