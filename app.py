@@ -8,10 +8,7 @@ from dotenv import load_dotenv
 import boto3
 from flask import Flask, jsonify
 
-from langchain.chains import LLMChain
-from langchain.prompts import PromptTemplate
-from langchain_community.chat_models import BedrockChat
-import streamlit as st
+from botocore.exceptions import ClientError
 
 load_dotenv()
 
@@ -29,25 +26,32 @@ bedrock_client = boto3.client(
     region_name="eu-west-2"
 )
 
-modelID = "anthropic.claude-3-sonnet-20240229-v1:0"
+model_id = "anthropic.claude-3-sonnet-20240229-v1:0"
 
-llm = BedrockChat(
-    model_id=modelID,
-    client=bedrock_client,
-    # model_kwargs={"max_tokens_to_sample": 2000,"temperature":0.9}
-)
+def getLLMmessage(userMessage):
+    # Start a conversation with the user message.
+    user_message = userMessage
+    conversation = [
+        {
+            "role": "user",
+            "content": [{"text": user_message}],
+        }
+    ]
 
-def my_helpbot(language, freeform_text):
-    prompt = PromptTemplate(
-        input_variables=["language", "freeform_text"],
-        template="You are a help bot to help suggest a fit for an issue. You are in {language}.\n\n{freeform_text}"
-    )
+    try:
+        # Send the message to the model, using a basic inference configuration.
+        response = bedrock_client.converse(
+            modelId=model_id,
+            messages=conversation,
+            inferenceConfig={"maxTokens": 512, "temperature": 0.5, "topP": 0.9},
+        )
 
-    bedrock_chain = LLMChain(llm=llm, prompt=prompt)
-
-    response = bedrock_chain({'language': language, 'freeform_text': freeform_text})
-    return response
-
+        # Extract and print the response text.
+        response_text = response["output"]["message"]["content"][0]["text"]
+        return response_text
+    except (ClientError, Exception) as e:
+        print(f"ERROR: Can't invoke '{model_id}'. Reason: {e}")
+        return ""
 
 # http://localhost:5001/health
 @app.route("/health", methods=["GET"])
@@ -98,7 +102,7 @@ def send_teams_alert(json_body):
     myTeamsMessage = pymsteams.connectorcard(TEAMS_WEBHOOK)
     myTeamsMessage.title(f"{json_body.get('title')}")
     myTeamsMessage.text(f"{json_body.get('desc')}")
-    myTeamsMessage.text(f"\n A suggested improvement is: {my_helpbot("english", str(json_body.get('desc'))).get('text')}")
+    myTeamsMessage.text(f"\n A suggested improvement is: {getLLMmessage(str(json_body.get('desc')))}")
     try:
         myTeamsMessage.send()
     except Exception as e:
